@@ -1,111 +1,4 @@
-// import express from 'express';
-// import { GoogleGenerativeAI } from '@google/generative-ai';
-// import Replicate from 'replicate';
-
-// export const generateRouter = express.Router();
-
-// const THEMES = {
-//   'golden-warmth': {
-//     label: 'Golden Warmth',
-//     imagePrompt: 'warm golden hour light, soft bokeh, autumn leaves, amber tones, cinematic depth of field, photorealistic, 8k',
-//   },
-//   'midnight-bloom': {
-//     label: 'Midnight Bloom',
-//     imagePrompt: 'midnight garden, moonlit flowers blooming in darkness, deep indigo and violet tones, ethereal glow, cinematic, 8k',
-//   },
-//   'ocean-calm': {
-//     label: 'Ocean Calm',
-//     imagePrompt: 'serene ocean at dawn, soft teal and pearl light, gentle waves, mist on water, peaceful, photorealistic, 8k',
-//   },
-//   'forest-dawn': {
-//     label: 'Forest Dawn',
-//     imagePrompt: 'misty forest at dawn, shafts of golden light through ancient trees, emerald and gold tones, cinematic atmosphere, 8k',
-//   },
-//   'celestial': {
-//     label: 'Celestial',
-//     imagePrompt: 'deep cosmos, nebula in rose gold and midnight blue, stars, vast and intimate simultaneously, cinematic space photography, 8k',
-//   },
-// };
-
-// function buildProsePrompt({ recipient, occasion, narrative }) {
-//   return `You are an elegant literary author crafting a deeply personal, heartfelt message.
-
-// Write a beautifully composed personal message for the following occasion. The writing should feel warm, intimate, and genuinely meaningful — not generic.
-
-// Tone: ${narrative.tone}
-// Recipient name: ${recipient.name}
-// Relationship: ${recipient.relationship}
-// Age: ${recipient.age || 'not specified'}
-// Occasion: ${occasion.label}
-// Occasion date: ${occasion.date || 'soon'}
-// ${narrative.sharedMemory ? `A shared memory or detail to weave in: ${narrative.sharedMemory}` : ''}
-// ${narrative.traits ? `Their notable qualities: ${narrative.traits}` : ''}
-// ${narrative.notes ? `Additional context: ${narrative.notes}` : ''}
-
-// Instructions:
-// - Write 3–5 paragraphs. No titles or headers.
-// - Do not use clichés or generic birthday phrases.
-// - Weave in specific details naturally — they should feel discovered, not listed.
-// - The final paragraph should feel like a genuine, specific wish for their future.
-// - Style: literary, warm, unhurried. Like a letter from someone who truly sees them.
-// - Write in second person (you / your).
-// - Do not include a salutation or sign-off — just the prose body.`;
-// }
-
-// // Generate prose via Gemini
-// generateRouter.post('/prose', async (req, res) => {
-//   try {
-//     const apiKey = process.env.GEMINI_API_KEY;
-//     if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
-
-//     const genAI = new GoogleGenerativeAI(apiKey);
-//     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
-
-//     const prompt = buildProsePrompt(req.body);
-//     const result = await model.generateContent(prompt);
-//     const prose = result.response.text().trim();
-
-//     res.json({ prose });
-//   } catch (err) {
-//     console.error('Gemini error:', err);
-//     res.status(500).json({ error: 'Generation failed', detail: err.message });
-//   }
-// });
-
-// // Generate background image via Replicate
-// generateRouter.post('/image', async (req, res) => {
-//   try {
-//     const apiKey = process.env.REPLICATE_API_KEY;
-//     if (!apiKey) return res.status(500).json({ error: 'REPLICATE_API_KEY not configured' });
-
-//     const { theme } = req.body;
-//     const themeConfig = THEMES[theme] || THEMES['golden-warmth'];
-
-//     const replicate = new Replicate({ auth: apiKey });
-
-//     const output = await replicate.run(
-//       'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b',
-//       {
-//         input: {
-//           prompt: themeConfig.imagePrompt,
-//           negative_prompt: 'text, watermark, people, faces, blurry, low quality, cartoon',
-//           width: 1344,
-//           height: 768,
-//           num_inference_steps: 30,
-//           guidance_scale: 7.5,
-//         },
-//       }
-//     );
-
-//     const imageUrl = Array.isArray(output) ? output[0] : output;
-//     res.json({ imageUrl });
-//   } catch (err) {
-//     console.error('Replicate error:', err);
-//     res.status(500).json({ error: 'Image generation failed', detail: err.message });
-//   }
-// });
-
-// import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import express from "express";
 import fs from "fs/promises";
 import path from "path";
@@ -114,17 +7,97 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const generateRouter = express.Router();
 
+const NANOBANANA_BASE = "https://api.nanobananaapi.ai/api/v1/nanobanana";
+
 async function getRandomAsset(dir) {
   try {
-    const fullPath = path.join(__dirname, '..', 'assets', dir);
+    const fullPath = path.join(__dirname, "..", "assets", dir);
     const files = await fs.readdir(fullPath);
-    const validFiles = files.filter(f => !f.startsWith('.'));
+    const validFiles = files.filter((f) => !f.startsWith("."));
     if (validFiles.length === 0) return null;
     const randomFile = validFiles[Math.floor(Math.random() * validFiles.length)];
     return `/assets/${dir}/${randomFile}`;
   } catch (e) {
     return null;
   }
+}
+
+// Submit a text-to-image task to NanoBanana, return taskId
+async function nanoBananaSubmit(prompt) {
+  const apiKey = process.env.NANOBANANA_API_KEY;
+  if (!apiKey) throw new Error("NANOBANANA_API_KEY not configured");
+
+  const res = await fetch(`${NANOBANANA_BASE}/generate`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      prompt,
+      type: "TEXTTOIAMGE", // NanoBanana's spelling
+      numImages: 1,
+      watermark: false,
+    }),
+  });
+
+  const data = await res.json();
+  if (!res.ok || data.code !== 200) {
+    throw new Error(`NanoBanana submit failed: ${data.msg || res.statusText}`);
+  }
+  return data.data.taskId;
+}
+
+// Poll until resultImageUrl is available
+async function nanoBananaPoll(taskId, { maxAttempts = 30, intervalMs = 3000 } = {}) {
+  const apiKey = process.env.NANOBANANA_API_KEY;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    await new Promise((r) => setTimeout(r, intervalMs));
+
+    const res = await fetch(`${NANOBANANA_BASE}/record-info?taskId=${taskId}`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(`NanoBanana poll failed: ${res.statusText}`);
+
+    const status = data?.data?.status;
+    const imageUrl = data?.data?.info?.resultImageUrl;
+
+    if (imageUrl) return imageUrl;
+    if (status === "FAILED" || status === "failed") {
+      throw new Error(`NanoBanana task ${taskId} failed`);
+    }
+  }
+
+  throw new Error(`NanoBanana task ${taskId} timed out`);
+}
+
+/**
+ * Generate an image via NanoBanana, download it immediately, and save it to
+ * client/public/assets/backgrounds/<theme>.webp — the exact path themeAssets.ts
+ * expects. Returns the stable public URL so chronicles never have broken images.
+ */
+async function nanoBananaGenerateImage(prompt, theme = "golden-warmth") {
+  const taskId = await nanoBananaSubmit(prompt);
+  const cdnUrl = await nanoBananaPoll(taskId);
+
+  // Download from CDN while the URL is still live
+  const dlRes = await fetch(cdnUrl);
+  if (!dlRes.ok) throw new Error(`Failed to download NanoBanana image: ${dlRes.status}`);
+
+  const buffer = Buffer.from(await dlRes.arrayBuffer());
+
+  // Write to client/public/assets/backgrounds/<theme>.webp
+  // Matches the paths in themeAssets.ts, served by Vite / express.static in prod
+  const dir = path.join(__dirname, "..", "..", "client", "public", "assets", "backgrounds");
+  await fs.mkdir(dir, { recursive: true });
+
+  const filePath = path.join(dir, `${theme}.webp`);
+  await fs.writeFile(filePath, buffer);
+
+  return `/assets/backgrounds/${theme}.webp`;
 }
 
 const THEMES = {
@@ -156,7 +129,7 @@ const THEMES = {
 };
 
 function buildProsePrompt(body) {
-  const { recipient = {}, occasion = {}, narrative = {}, narrativeContext, language = 'English' } = body || {};
+  const { recipient = {}, occasion = {}, narrative = {}, narrativeContext, language = "English" } = body || {};
 
   const ctx = narrativeContext || {};
 
@@ -183,14 +156,9 @@ function buildProsePrompt(body) {
   const milestone = subject.milestone || occasion.label || "";
   const lifePhase = subject.lifePhase || "";
 
-  const behaviorExample =
-    ctx.behaviorExample ||
-    connectionSignal.behaviorOrDynamic ||
-    narrative.sharedMemory ||
-    "";
+  const behaviorExample = ctx.behaviorExample || connectionSignal.behaviorOrDynamic || narrative.sharedMemory || "";
 
-  const relationshipType =
-    relationshipPerspective.relationshipType || recipient.relationship || "";
+  const relationshipType = relationshipPerspective.relationshipType || recipient.relationship || "";
   const narratorPersona = relationshipPerspective.narratorPersona || "";
   const emotionalStance = relationshipPerspective.emotionalStance || "";
 
@@ -202,30 +170,20 @@ function buildProsePrompt(body) {
   const transitionMoment = lifeContext.transitionMoment || "";
   const chapterTone = lifeContext.chapterTone || narrative.tone || "";
 
-  const sharedMemoryTone =
-    connectionSignal.sharedMemoryTone || narrative.sharedMemory || "";
+  const sharedMemoryTone = connectionSignal.sharedMemoryTone || narrative.sharedMemory || "";
   const whyTheyMatter = connectionSignal.whyTheyMatter || "";
 
   const primaryGoal = messageIntent.primaryGoal || "celebrate";
-  const emotionalMix = Array.isArray(messageIntent.emotionalMix)
-    ? messageIntent.emotionalMix
-    : ["warm"];
+  const emotionalMix = Array.isArray(messageIntent.emotionalMix) ? messageIntent.emotionalMix : ["warm"];
 
   const wishIntensity = closingStyle.wishIntensity || "poetic";
   const futureOrientation = closingStyle.futureOrientation || "";
 
-  const literaryStyle =
-    styleLayer.literaryStyle ||
-    "modern literary, gently luminous, intimate";
+  const literaryStyle = styleLayer.literaryStyle || "modern literary, gently luminous, intimate";
   const metaphorDensity = styleLayer.metaphorDensity || "medium";
 
-  const traitsLine = allTraits.length
-    ? `Core traits: ${allTraits.join(", ")}.`
-    : "";
-
-  const emotionalMixLine = emotionalMix.length
-    ? `Emotional mix: ${emotionalMix.join(", ")}.`
-    : "";
+  const traitsLine = allTraits.length ? `Core traits: ${allTraits.join(", ")}.` : "";
+  const emotionalMixLine = emotionalMix.length ? `Emotional mix: ${emotionalMix.join(", ")}.` : "";
 
   const settingLines = [
     environmentMood && `Environment: ${environmentMood}.`,
@@ -246,10 +204,8 @@ function buildProsePrompt(body) {
     .join("\n");
 
   const connectionLines = [
-    behaviorExample &&
-      `One small behavior or dynamic that captures the relationship: ${behaviorExample}.`,
-    sharedMemoryTone &&
-      `Shared memory tone or moment to gently weave in: ${sharedMemoryTone}.`,
+    behaviorExample && `One small behavior or dynamic that captures the relationship: ${behaviorExample}.`,
+    sharedMemoryTone && `Shared memory tone or moment to gently weave in: ${sharedMemoryTone}.`,
     whyTheyMatter && `Why they matter to the narrator: ${whyTheyMatter}.`,
   ]
     .filter(Boolean)
@@ -259,30 +215,32 @@ function buildProsePrompt(body) {
 
   const ageInstruction = recipient.age
     ? `Recipient age: ${recipient.age}. Calibrate reading level, emotional pitch, and vocabulary accordingly.`
-    : '';
+    : "";
 
-  const tonePermission = (narrative.tone === 'playful & light' || narrative.tone === 'celebratory & joyful')
-    ? `Tone permission: light wordplay, gentle humour, and an energetic cadence are welcome here. Do not default to literary solemnity. Let the prose smile.`
-    : '';
+  const tonePermission =
+    narrative.tone === "playful & light" || narrative.tone === "celebratory & joyful"
+      ? `Tone permission: light wordplay, gentle humour, and an energetic cadence are welcome here. Do not default to literary solemnity. Let the prose smile.`
+      : "";
 
-  const styleOverride = styleLayer.literaryStyle === 'conversational'
-    ? `Style override: write as a warm, articulate friend would speak — natural contractions, simple vocabulary, short sentences are fine. Avoid ornate metaphors and literary distance.`
-    : '';
+  const styleOverride =
+    styleLayer.literaryStyle === "conversational"
+      ? `Style override: write as a warm, articulate friend would speak — natural contractions, simple vocabulary, short sentences are fine. Avoid ornate metaphors and literary distance.`
+      : "";
 
-  const professionalNote = ['Colleague', 'Mentor'].includes(relationshipType)
+  const professionalNote = ["Colleague", "Mentor"].includes(relationshipType)
     ? `Relationship note: maintain professional warmth. Genuine but not overly intimate.`
-    : '';
+    : "";
 
   const sensitiveOccasionNote = (() => {
-    const lbl = (occasion.label || '').toLowerCase();
-    return lbl.includes('sympathy') || lbl.includes('loss')
+    const lbl = (occasion.label || "").toLowerCase();
+    return lbl.includes("sympathy") || lbl.includes("loss")
       ? `Sensitive occasion: Do NOT use silver-lining framing, toxic positivity, or future-oriented wish language. Honour the weight of the moment. Be present, gentle, and honest.`
-      : '';
+      : "";
   })();
 
   const specialInstructions = [ageInstruction, tonePermission, styleOverride, professionalNote, sensitiveOccasionNote]
     .filter(Boolean)
-    .join('\n');
+    .join("\n");
 
   return `You are an elegant literary author crafting a deeply personal, heartfelt message in ${language}.
 
@@ -358,36 +316,25 @@ generateRouter.post("/prose", async (req, res) => {
 
 async function generateThemeImage(body) {
   const { theme } = body || {};
-  const localImage = await getRandomAsset(`images/${theme || 'golden-warmth'}`);
+
+  // Local assets take priority — no API call needed
+  const localImage = await getRandomAsset(`images/${theme || "golden-warmth"}`);
   if (localImage) return localImage;
 
-  const apiKey = process.env.REPLICATE_API_KEY;
-  if (!apiKey) {
-    throw new Error("REPLICATE_API_KEY not configured and no local assets found");
-  }
-
-  const { recipient = {}, occasion = {}, narrative = {}, narrativeContext = {} } =
-    body || {};
-
+  // Fall back to NanoBanana
+  const { recipient = {}, occasion = {}, narrative = {}, narrativeContext = {} } = body || {};
   const themeConfig = THEMES[theme] || THEMES["golden-warmth"];
-  const basePrompt = themeConfig.imagePrompt;
 
   const relationship =
-    (narrativeContext.relationshipPerspective &&
-      narrativeContext.relationshipPerspective.relationshipType) ||
+    (narrativeContext.relationshipPerspective && narrativeContext.relationshipPerspective.relationshipType) ||
     recipient.relationship ||
     "someone dear to the narrator";
 
   const tone =
-    (narrativeContext.lifeContext && narrativeContext.lifeContext.chapterTone) ||
-    narrative.tone ||
-    "warm & heartfelt";
+    (narrativeContext.lifeContext && narrativeContext.lifeContext.chapterTone) || narrative.tone || "warm & heartfelt";
 
-  const environment =
-    (narrativeContext.settingMood && narrativeContext.settingMood.environmentMood) || "";
-  const atmosphere =
-    (narrativeContext.settingMood && narrativeContext.settingMood.emotionalAtmosphere) || "";
-
+  const environment = (narrativeContext.settingMood && narrativeContext.settingMood.environmentMood) || "";
+  const atmosphere = (narrativeContext.settingMood && narrativeContext.settingMood.emotionalAtmosphere) || "";
   const occasionLabel = occasion.label || "a special moment";
 
   const detailParts = [
@@ -400,210 +347,16 @@ async function generateThemeImage(body) {
     .filter(Boolean)
     .join(", ");
 
-  const prompt = `${basePrompt}, ${detailParts}`;
-
-  const version =
-    "39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b";
-
-  const createRes = await fetch("https://api.replicate.com/v1/predictions", {
-    method: "POST",
-    headers: {
-      Authorization: `Token ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      version,
-      input: {
-        prompt,
-        negative_prompt:
-          "text, watermark, people, faces, blurry, low quality, cartoon",
-        width: 1344,
-        height: 768,
-        num_inference_steps: 30,
-        guidance_scale: 7.5,
-      },
-    }),
-  });
-
-  if (!createRes.ok) {
-    const errBody = await createRes.text();
-    throw new Error(
-      `Replicate create failed: ${createRes.status} ${createRes.statusText} ${errBody}`
-    );
-  }
-
-  let prediction = await createRes.json();
-
-  const maxAttempts = 20;
-  const pollIntervalMs = 1500;
-
-  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    if (
-      prediction.status === "succeeded" ||
-      prediction.status === "failed" ||
-      prediction.status === "canceled"
-    ) {
-      break;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
-
-    const pollRes = await fetch(
-      `https://api.replicate.com/v1/predictions/${prediction.id}`,
-      {
-        headers: {
-          Authorization: `Token ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!pollRes.ok) {
-      const errBody = await pollRes.text();
-      throw new Error(
-        `Replicate poll failed: ${pollRes.status} ${pollRes.statusText} ${errBody}`
-      );
-    }
-
-    prediction = await pollRes.json();
-  }
-
-  if (prediction.status !== "succeeded") {
-    throw new Error(
-      prediction.error || `Replicate prediction ${prediction.status || "failed"}`
-    );
-  }
-
-  const output = prediction.output;
-  const imageUrl = Array.isArray(output) ? output[0] : output;
-
-  if (!imageUrl) {
-    throw new Error("Replicate returned no image URL");
-  }
-
-  return imageUrl;
+  const prompt = `${themeConfig.imagePrompt}, ${detailParts}`;
+  return await nanoBananaGenerateImage(prompt, theme || "golden-warmth");
 }
 
+// NanoBanana is image-only — animation falls back to null gracefully
 async function generateThemeAnimation(body) {
   const { theme } = body || {};
-  const localAnim = await getRandomAsset(`images/${theme || 'golden-warmth'}`);
-  if (localAnim && (localAnim.endsWith('.mp4') || localAnim.endsWith('.webm'))) return localAnim;
-
-  const apiKey = process.env.REPLICATE_API_KEY;
-  const videoVersion = process.env.REPLICATE_VIDEO_VERSION;
-
-  if (!apiKey || !videoVersion) {
-    return null;
-  }
-
-  const { recipient = {}, occasion = {}, narrative = {}, narrativeContext = {} } =
-    body || {};
-
-  const themeConfig = THEMES[theme] || THEMES["golden-warmth"];
-  const basePrompt = themeConfig.imagePrompt;
-
-  const relationship =
-    (narrativeContext.relationshipPerspective &&
-      narrativeContext.relationshipPerspective.relationshipType) ||
-    recipient.relationship ||
-    "someone dear to the narrator";
-
-  const tone =
-    (narrativeContext.lifeContext && narrativeContext.lifeContext.chapterTone) ||
-    narrative.tone ||
-    "warm & heartfelt";
-
-  const environment =
-    (narrativeContext.settingMood && narrativeContext.settingMood.environmentMood) || "";
-  const atmosphere =
-    (narrativeContext.settingMood && narrativeContext.settingMood.emotionalAtmosphere) || "";
-
-  const occasionLabel = occasion.label || "a special moment";
-
-  const detailParts = [
-    `short, subtle looping motion`,
-    `for a ${tone.toLowerCase()} chronicle about ${relationship}`,
-    `set around ${occasionLabel.toLowerCase()}`,
-    environment && `environment: ${environment}`,
-    atmosphere && `atmosphere: ${atmosphere}`,
-    "no people, no faces, no text, wholesome, respectful, no explicit content, no violence",
-  ]
-    .filter(Boolean)
-    .join(", ");
-
-  const prompt = `${basePrompt}, ${detailParts}`;
-
-  const createRes = await fetch("https://api.replicate.com/v1/predictions", {
-    method: "POST",
-    headers: {
-      Authorization: `Token ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      version: videoVersion,
-      input: {
-        prompt,
-      },
-    }),
-  });
-
-  if (!createRes.ok) {
-    const errBody = await createRes.text();
-    throw new Error(
-      `Replicate video create failed: ${createRes.status} ${createRes.statusText} ${errBody}`
-    );
-  }
-
-  let prediction = await createRes.json();
-
-  const maxAttempts = 40;
-  const pollIntervalMs = 1500;
-
-  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    if (
-      prediction.status === "succeeded" ||
-      prediction.status === "failed" ||
-      prediction.status === "canceled"
-    ) {
-      break;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
-
-    const pollRes = await fetch(
-      `https://api.replicate.com/v1/predictions/${prediction.id}`,
-      {
-        headers: {
-          Authorization: `Token ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!pollRes.ok) {
-      const errBody = await pollRes.text();
-      throw new Error(
-        `Replicate video poll failed: ${pollRes.status} ${pollRes.statusText} ${errBody}`
-      );
-    }
-
-    prediction = await pollRes.json();
-  }
-
-  if (prediction.status !== "succeeded") {
-    throw new Error(
-      prediction.error || `Replicate video prediction ${prediction.status || "failed"}`
-    );
-  }
-
-  const output = prediction.output;
-  const animationUrl = Array.isArray(output) ? output[0] : output;
-
-  if (!animationUrl) {
-    throw new Error("Replicate returned no animation URL");
-  }
-
-  return animationUrl;
+  const localAnim = await getRandomAsset(`images/${theme || "golden-warmth"}`);
+  if (localAnim && (localAnim.endsWith(".mp4") || localAnim.endsWith(".webm"))) return localAnim;
+  return null;
 }
 
 generateRouter.post("/image", async (req, res) => {
@@ -628,31 +381,11 @@ generateRouter.post("/animation", async (req, res) => {
 
 generateRouter.post("/audio", async (req, res) => {
   try {
-    const { language = 'English' } = req.body;
-    const langCode = language.toLowerCase() === 'hindi' ? 'hi' : 
-                     language.toLowerCase() === 'bengali' ? 'bn' : 'en';
+    const { language = "English" } = req.body;
+    const langCode = language.toLowerCase() === "hindi" ? "hi" : language.toLowerCase() === "bengali" ? "bn" : "en";
     const localAudio = await getRandomAsset(`audio/${langCode}`);
     if (localAudio) return res.json({ audioUrl: localAudio });
-
-    const apiKey = process.env.REPLICATE_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: "REPLICATE_API_KEY not configured and no local assets found" });
-
-    const { prose } = req.body;
-    const replicate = (await import('replicate')).default;
-    const client = new replicate({ auth: apiKey });
-
-    const output = await client.run(
-      "lucataco/xtts-v2:684c4b32f9a2637ad93c9515117f997d1aa1b8ab233ce976007e6aa410715795",
-      {
-        input: {
-          text: prose,
-          speaker: "https://replicate.delivery/pbxt/Jt79D0V1ZH9sogzreP8T38YtY9r2v3v9tY9v9v9tY9v9v9tY/female.wav",
-          language: langCode
-        }
-      }
-    );
-
-    res.json({ audioUrl: output });
+    res.status(500).json({ error: "No audio assets found and no TTS API configured" });
   } catch (err) {
     console.error("Audio generation error:", err);
     res.status(500).json({ error: "Audio generation failed", detail: err.message });
@@ -660,68 +393,42 @@ generateRouter.post("/audio", async (req, res) => {
 });
 
 function buildMusicPrompt(narrative = {}, occasion = {}) {
-  const tone = narrative.tone || 'warm & heartfelt';
-  const occasionLabel = (occasion.label || '').toLowerCase();
+  const tone = narrative.tone || "warm & heartfelt";
+  const occasionLabel = (occasion.label || "").toLowerCase();
 
   const toneMap = {
-    'warm & heartfelt':     'soft acoustic piano, warm strings, gentle and intimate, no percussion',
-    'playful & light':      'light folk guitar, upbeat acoustic, cheerful and bright',
-    'reflective & poetic':  'ambient atmospheric piano, sparse and contemplative, minimal',
-    'celebratory & joyful': 'uplifting orchestral, bright brass, joyful and triumphant',
-    'tender & intimate':    'quiet solo piano, minimal, close and tender, soft cello',
+    "warm & heartfelt": "soft acoustic piano, warm strings, gentle and intimate, no percussion",
+    "playful & light": "light folk guitar, upbeat acoustic, cheerful and bright",
+    "reflective & poetic": "ambient atmospheric piano, sparse and contemplative, minimal",
+    "celebratory & joyful": "uplifting orchestral, bright brass, joyful and triumphant",
+    "tender & intimate": "quiet solo piano, minimal, close and tender, soft cello",
   };
 
-  let prompt = toneMap[tone] || toneMap['warm & heartfelt'];
+  let prompt = toneMap[tone] || toneMap["warm & heartfelt"];
 
-  if (occasionLabel.includes('sympathy') || occasionLabel.includes('loss')) {
-    prompt = 'sparse minimalist piano, quiet, respectful, no percussion, gentle and present';
-  } else if (occasionLabel.includes('graduation')) {
-    prompt += ', hopeful, triumphant, builds gently';
-  } else if (occasionLabel.includes('birthday')) {
-    prompt += ', warm celebration, gentle energy';
+  if (occasionLabel.includes("sympathy") || occasionLabel.includes("loss")) {
+    prompt = "sparse minimalist piano, quiet, respectful, no percussion, gentle and present";
+  } else if (occasionLabel.includes("graduation")) {
+    prompt += ", hopeful, triumphant, builds gently";
+  } else if (occasionLabel.includes("birthday")) {
+    prompt += ", warm celebration, gentle energy";
   }
 
   return prompt;
 }
 
-generateRouter.post('/music', async (req, res) => {
-  try {
-    const { narrative = {}, occasion = {}, language = 'English' } = req.body;
-    const apiKey = process.env.NANOBANANA_API_KEY;
-
-    // Local fallback first
-    const langCode = language.toLowerCase() === 'hindi' ? 'hi' :
-                     language.toLowerCase() === 'bengali' ? 'bn' : 'en';
-    const localAudio = await getRandomAsset(`audio/${langCode}`);
-    if (!apiKey && localAudio) return res.json({ musicUrl: localAudio });
-    if (!apiKey) return res.status(500).json({ error: 'NANOBANANA_API_KEY not configured' });
-
-    const prompt = buildMusicPrompt(narrative, occasion);
-
-    // TODO: Confirm exact endpoint + body shape from NanoBanana dashboard
-    const response = await fetch('https://api.nanobananaapi.ai/v1/music', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt,
-        mode: 'custom',
-        duration: 60,
-      }),
-    });
-
-    if (!response.ok) throw new Error(`NanoBanana music error: ${response.status}`);
-    const data = await response.json();
-
-    // Adjust field name to match actual NanoBanana response
-    const musicUrl = data.url || data.audioUrl || data.output;
-    res.json({ musicUrl });
-  } catch (err) {
-    console.error('Music generation error:', err);
-    res.status(500).json({ error: 'Music generation failed', detail: err.message });
-  }
+generateRouter.post("/music", async (req, res) => {
+  const { narrative = {}, occasion = {} } = req.body;
+  const toneToFolder = {
+    "warm & heartfelt": "warm",
+    "playful & light": "playful",
+    "reflective & poetic": "reflective",
+    "celebratory & joyful": "playful",
+    "tender & intimate": "warm",
+  };
+  const folder = toneToFolder[narrative.tone] || "ambient";
+  const localAudio = (await getRandomAsset(`audio/${folder}`)) || (await getRandomAsset("audio/ambient"));
+  res.json({ musicUrl: localAudio || null });
 });
 
 export { THEMES };

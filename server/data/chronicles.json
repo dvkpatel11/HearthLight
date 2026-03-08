@@ -664,6 +664,154 @@
       "animationUrl": null,
       "createdAt": "2026-02-23T16:10:14.861Z",
       "updatedAt": "2026-02-23T16:10:14.861Z"
+    },
+    {
+      "id": "ASyqhUFIzHBqbh987JOUm",
+      "slug": "HiyGP2tsqd",
+      "creatorToken": "A-46eSq0_fJ5htpWxADCZfCLsK-nE17w",
+      "recipient": {
+        "name": "Jayshreeben",
+        "relationship": "Parent",
+        "age": "52"
+      },
+      "occasion": {
+        "label": "Birthday",
+        "date": "2026-05-12"
+      },
+      "narrative": {
+        "tone": "warm & heartfelt"
+      },
+      "narrativeContext": {
+        "subject": {
+          "displayName": "Jayshreeben",
+          "archetype": "",
+          "milestone": "Birthday",
+          "lifePhase": ""
+        },
+        "traits": [
+          "Resilient",
+          "Kind",
+          "Brave",
+          "Gentle",
+          "Caring"
+        ],
+        "behaviorExample": "She made me the center of her world",
+        "relationshipPerspective": {
+          "relationshipType": "Parent",
+          "narratorPersona": "",
+          "emotionalStance": ""
+        },
+        "settingMood": {
+          "environmentMood": "",
+          "symbolicStyle": "",
+          "emotionalAtmosphere": ""
+        },
+        "lifeContext": {
+          "recentChallenges": "",
+          "transitionMoment": "Learning to live the peaceful life of her 50s",
+          "chapterTone": ""
+        },
+        "connectionSignal": {
+          "behaviorOrDynamic": "",
+          "sharedMemoryTone": "",
+          "whyTheyMatter": ""
+        },
+        "messageIntent": {
+          "primaryGoal": "celebrate",
+          "emotionalMix": [
+            "warm"
+          ]
+        },
+        "closingStyle": {
+          "wishIntensity": "poetic",
+          "futureOrientation": ""
+        },
+        "styleLayer": {
+          "literaryStyle": "modern-literary",
+          "metaphorDensity": "medium"
+        }
+      },
+      "theme": "midnight-bloom",
+      "prose": "આપના જન્મદિવસે, મારા હૃદયમાં એક અનોખી ઉષ્મા અને કૃતજ્ઞતા ઉમટી રહી છે. વર્ષો વીતતા જાય છે, પણ તમારી આત્માની સૌમ્યતા અને અનુકંપા અકબંધ રહી છે, બલ્કે વધુ દીપી ઉઠી છે. તમારી હાજરી હંમેશા એક અવિચળ દીપ જેવી રહી છે, જેણે અંધકારમાં પણ રાહ ચીંધી છે અને હૂંફ આપી છે.\n\nયાદ છે, કેવી રીતે તમે અમારા નાના વિશ્વને તમારી કાળજીના કેન્દ્રમાં રાખ્યું હતું. તમારી હિંમત, તમારી દયા અને તમારી ધીરજ – આ બધું જ અમારા જીવનનો આધારસ્તંભ બન્યું છે. જ્યારે પણ મુશ્કેલીઓનો સામનો કરવો પડ્યો, ત્યારે તમારા મૃદુ સ્પર્શ પાછળની અડગ શક્તિએ અમને ફરી ઊભા થવા પ્રેરણા આપી. તમે એક વહેતા ઝરણા જેવા છો, જે ભલે ગમે તેટલા પથ્થરો સામે આવે, પોતાનો રસ્તો શોધી લે છે અને મીઠું પાણી આપતો રહે છે.\n\nઆજે, જ્યારે તમે પચાસીના દાયકાના શાંત અને નવલા અધ્યાયમાં પ્રવેશ્યા છો, ત્યારે જોઉં છું કે તમારી અંદર એક નવી શાંતીનો સંચાર થયો છે. જે જીવન તમે અન્યના પોષણમાં ખર્ચી નાખ્યું, હવે તે સમય તમારી પોતાની શાંતિ, તમારા પોતાના આનંદ અને તમારી આંતરિક સુંદરતાને ખીલવવાનો છે. હવે તમે એ નદી જેવા છો જે લાંબી યાત્રા પછી શાંત સરોવરમાં ભળી રહી છે, જ્યાં તેને પોતાની નિર્મળતાનો અનુભવ થાય છે.\n\nઆપનો આ નવો અધ્યાય અસીમ આનંદ, સ્વસ્થતા અને આત્મ-સંતોષથી ભરાઈ રહે એવી હૃદયપૂર્વક પ્રાર્થના. તમારી અવિચળ શક્તિ, તમારી અપ્રતિમ દયા અને તમારી સ્નિગ્ધતા સદાય એવી જ પ્રવર્તમાન રહે. પ્રત્યેક દિવસ તમારા માટે એક નવી સવાર બની આવે, જે શાંતિ અને સ્નેહના રંગોથી ભરપૂર હોય, અને જેમાં તમે તમારી જાતને સંપૂર્ણપણે પામી શકો.",
+      "imageUrl": "/assets/images/midnight-bloom/1.jpg",
+      "animationUrl": null,
+      "musicUrl": "/assets/audio/en/1.mp3",
+      "createdAt": "2026-02-27T05:14:12.917Z",
+      "updatedAt": "2026-02-27T05:14:12.917Z"
+    },
+    {
+      "id": "0YOX0zvbNEICJK9TjLK9s",
+      "slug": "4QQDmc2I7o",
+      "creatorToken": "Dwt9PLP4hSh09vi77DhVsmdcetNMjK9c",
+      "recipient": {
+        "name": "Hrishit",
+        "relationship": "Best Friend",
+        "age": "28"
+      },
+      "occasion": {
+        "label": "Just Because",
+        "date": "2026-02-27"
+      },
+      "narrative": {
+        "tone": "playful & light"
+      },
+      "narrativeContext": {
+        "subject": {
+          "displayName": "Hrishit",
+          "archetype": "",
+          "milestone": "Just Because",
+          "lifePhase": ""
+        },
+        "traits": [
+          "Kind",
+          "Caring",
+          "Playful",
+          "Curious",
+          "Thoughtful"
+        ],
+        "behaviorExample": "",
+        "relationshipPerspective": {
+          "relationshipType": "Best Friend",
+          "narratorPersona": "",
+          "emotionalStance": ""
+        },
+        "settingMood": {
+          "environmentMood": "",
+          "symbolicStyle": "",
+          "emotionalAtmosphere": ""
+        },
+        "lifeContext": {
+          "recentChallenges": "",
+          "transitionMoment": "Learning how to face reality",
+          "chapterTone": "playful & light"
+        },
+        "connectionSignal": {
+          "behaviorOrDynamic": "",
+          "sharedMemoryTone": "",
+          "whyTheyMatter": ""
+        },
+        "messageIntent": {
+          "primaryGoal": "celebrate",
+          "emotionalMix": [
+            "warm"
+          ]
+        },
+        "closingStyle": {
+          "wishIntensity": "poetic",
+          "futureOrientation": ""
+        },
+        "styleLayer": {
+          "literaryStyle": "modern-literary",
+          "metaphorDensity": "medium"
+        }
+      },
+      "theme": "forest-dawn",
+      "prose": "হৃষিত, আজ হঠাৎই যখন জানালার বাইরে পড়ন্ত বিকেলের নরম আলোটা দেখলাম, কেমন যেন তোমার কথাই মনে পড়ল। দেখছি আজকাল তুমি জীবন নামের এই বড় বইটার পাতায় পাতায় নতুন করে বাস্তবকে চিনতে শিখছো, আর মজার ব্যাপার হলো, তোমার সেই শেখার মধ্যেও কেমন একটা খেলাচ্ছলে মগ্নতা থাকে, এক ঝলমলে কৌতুক। তোমার সেই কৌতূহলী মন, আর যে কোনো জিনিসকে একটু অন্যরকম ভাবে দেখার যে প্রবণতা, সেটা আমাকে বরাবরই মুগ্ধ করে।\n\nযেখানে অনেকেই হয়তো একটু গম্ভীর হয়ে যায়, তুমি সেখানে নিজের মতো করে এক টুকরো হাসির রোদ এনে ফেলো। তোমার সেই ভাবনাগুলোর বুনে চলা সুতোয়, কত যে যত্ন আর ভালো লাগার টান থাকে, সেটা কেবল নীরবে দেখলেই বোঝা যায়। সেই ছোট্ট অথচ গভীর ভাবনাগুলো, আর সবার প্রতি তোমার সহজাত দয়া – এগুলোই যেন তোমার সবচেয়ে সুন্দর পালক, যা দিয়ে তুমি এই পৃথিবীর বুকে নিজের মতো করে একটা ছন্দ তৈরি করো।\n\nবহু বছরের বন্ধু আমরা, তাই কথা না বলেও কত কিছু বলে ফেলি একে অপরের কাছে। তোমার ভেতরের সেই স্থিরতা, আর বাইরে থেকে দেখতে হালকা মনে হলেও, কত গভীরে গিয়ে তুমি সবকিছু বিচার করো, তা হয়তো খুব কম জনই জানে। আর এই যে তুমি নিজের শর্তে বাস্তবের সঙ্গে বন্ধুত্ব পাতানোর চেষ্টা করছো, তাতে আমি এক অন্যরকম সৌন্দর্য খুঁজে পাই – একটা নির্ভার আত্মবিশ্বাসের ছবি, যা দেখে মনটা ভালো হয়ে যায়।\n\nতাই এই যে তুমি জীবনের নতুন অধ্যায়গুলোর সঙ্গে পরিচিত হচ্ছো, সেখানে তোমার এই কৌতুকময় প্রজ্ঞা, অদম্য কৌতূহল আর অন্তরের উষ্ণতা যেন চিরকাল তোমার পথপ্রদর্শক হয়ে থাকে। তোমার এই পথচলা যেন আরও উজ্জ্বল, আরও প্রাণবন্ত হয়ে ওঠে, আর প্রতি পদে যেন নতুন নতুন হাসির ফুল ফোটে।",
+      "imageUrl": "/assets/images/forest-dawn/1.jpg",
+      "animationUrl": null,
+      "musicUrl": null,
+      "createdAt": "2026-02-27T05:37:16.187Z",
+      "updatedAt": "2026-02-27T05:37:16.187Z"
     }
   ],
   "views": [
@@ -831,6 +979,26 @@
       "slug": "cXYVZZvb7k",
       "ipHash": "OjpmZmZmOjEyNy4w",
       "viewedAt": "2026-02-24T22:35:41.309Z"
+    },
+    {
+      "slug": "HiyGP2tsqd",
+      "ipHash": "MTI3LjAuMC4x",
+      "viewedAt": "2026-02-27T05:14:17.400Z"
+    },
+    {
+      "slug": "HiyGP2tsqd",
+      "ipHash": "MTI3LjAuMC4x",
+      "viewedAt": "2026-02-27T05:14:17.430Z"
+    },
+    {
+      "slug": "4QQDmc2I7o",
+      "ipHash": "MTI3LjAuMC4x",
+      "viewedAt": "2026-02-27T05:37:18.543Z"
+    },
+    {
+      "slug": "4QQDmc2I7o",
+      "ipHash": "MTI3LjAuMC4x",
+      "viewedAt": "2026-02-27T05:37:17.026Z"
     }
   ]
 }

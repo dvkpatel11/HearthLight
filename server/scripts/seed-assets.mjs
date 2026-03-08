@@ -1,55 +1,50 @@
-import 'dotenv/config';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import Replicate from 'replicate';
-import { THEMES } from '../routes/generate.js';
+import "dotenv/config";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+import { THEMES } from "../routes/generate.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, '..', '..');
-const publicRoot = path.join(repoRoot, 'client', 'public');
+const repoRoot = path.resolve(__dirname, "..", "..");
+const publicRoot = path.join(repoRoot, "client", "public");
 
-const replicateApiKey = process.env.REPLICATE_API_KEY;
+const apiKey = process.env.NANOBANANA_API_KEY;
+const BASE_URL = "https://api.nanobananaapi.ai/api/v1/nanobanana";
 
-if (!replicateApiKey) {
-  console.error('REPLICATE_API_KEY is not set in server/.env; cannot generate assets.');
+if (!apiKey) {
+  console.error("NANOBANANA_API_KEY is not set in server/.env; cannot generate assets.");
   process.exit(1);
 }
 
-const replicate = new Replicate({ auth: replicateApiKey });
-
-// SDXL model used previously in the project for backgrounds
-const MODEL = 'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b';
-
 const backgroundTasks = Object.entries(THEMES).map(([id, cfg]) => ({
   id,
-  kind: 'background',
+  kind: "background",
   prompt: cfg.imagePrompt,
-  outPath: path.join(publicRoot, 'assets', 'backgrounds', `${id}.webp`),
+  outPath: path.join(publicRoot, "assets", "backgrounds", `${id}.webp`),
 }));
 
 const textureTasks = [
   {
-    id: 'parchment',
-    kind: 'texture',
+    id: "parchment",
+    kind: "texture",
     prompt:
-      'subtle parchment paper texture, warm ivory, fine grain, no text, no watermark, seamless, soft lighting, high resolution',
-    outPath: path.join(publicRoot, 'assets', 'textures', 'parchment.webp'),
+      "subtle parchment paper texture, warm ivory, fine grain, no text, no watermark, seamless, soft lighting, high resolution",
+    outPath: path.join(publicRoot, "assets", "textures", "parchment.webp"),
   },
   {
-    id: 'mist',
-    kind: 'texture',
+    id: "mist",
+    kind: "texture",
     prompt:
-      'soft atmospheric mist overlay, transparent edges, gentle light bloom, no people, no text, seamless, cinematic lighting',
-    outPath: path.join(publicRoot, 'assets', 'textures', 'mist.webp'),
+      "soft atmospheric mist overlay, transparent edges, gentle light bloom, no people, no text, seamless, cinematic lighting",
+    outPath: path.join(publicRoot, "assets", "textures", "mist.webp"),
   },
   {
-    id: 'light-rays',
-    kind: 'texture',
+    id: "light-rays",
+    kind: "texture",
     prompt:
-      'subtle light rays overlay, diagonal beams, very soft, transparent background, no people, no text, cinematic, high resolution',
-    outPath: path.join(publicRoot, 'assets', 'textures', 'light-rays.webp'),
+      "subtle light rays overlay, diagonal beams, very soft, transparent background, no people, no text, cinematic, high resolution",
+    outPath: path.join(publicRoot, "assets", "textures", "light-rays.webp"),
   },
 ];
 
@@ -67,33 +62,79 @@ async function ensureDirFor(filePath) {
   await fs.mkdir(dir, { recursive: true });
 }
 
-async function generateAndSaveImage(prompt, outPath) {
-  console.log(`→ Generating image for ${outPath}`);
-  await ensureDirFor(outPath);
-
-  const output = await replicate.run(MODEL, {
-    input: {
-      prompt,
-      negative_prompt: 'text, watermark, logo, low quality, people, faces, cartoon',
-      width: 1344,
-      height: 768,
-      num_inference_steps: 30,
-      guidance_scale: 7.5,
+/**
+ * Submit a generation task to NanoBanana and return the taskId.
+ */
+async function submitTask(prompt) {
+  const res = await fetch(`${BASE_URL}/generate`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
     },
+    body: JSON.stringify({
+      prompt,
+      type: "TEXTTOIAMGE", // NanoBanana's spelling (not our typo)
+      numImages: 1,
+      watermark: false,
+    }),
   });
 
-  const imageUrl = Array.isArray(output) ? output[0] : output;
-  if (!imageUrl) {
-    throw new Error('Replicate did not return an image URL');
+  const data = await res.json();
+  if (!res.ok || data.code !== 200) {
+    throw new Error(`NanoBanana submit failed: ${data.msg || res.statusText}`);
   }
 
-  const res = await fetch(imageUrl);
-  if (!res.ok) {
-    throw new Error(`Failed to download image from ${imageUrl}: ${res.status} ${res.statusText}`);
+  return data.data.taskId;
+}
+
+/**
+ * Poll until the task is done, then return the resultImageUrl.
+ * Throws if it fails or times out.
+ */
+async function pollForResult(taskId, { maxAttempts = 30, intervalMs = 3000 } = {}) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    await new Promise((r) => setTimeout(r, intervalMs));
+
+    const res = await fetch(`${BASE_URL}/record-info?taskId=${taskId}`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(`NanoBanana poll failed: ${res.statusText}`);
+
+    const info = data?.data?.info;
+    const status = data?.data?.status;
+
+    if (info?.resultImageUrl) {
+      return info.resultImageUrl;
+    }
+
+    // Surface any hard failure early
+    if (status === "FAILED" || status === "failed") {
+      throw new Error(`NanoBanana task ${taskId} failed`);
+    }
+
+    console.log(`  attempt ${attempt}/${maxAttempts} — status: ${status || "pending"}`);
   }
 
-  const arrayBuffer = await res.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  throw new Error(`NanoBanana task ${taskId} timed out after ${maxAttempts} attempts`);
+}
+
+async function generateAndSaveImage(prompt, outPath) {
+  console.log(`→ Generating: ${path.basename(outPath)}`);
+  await ensureDirFor(outPath);
+
+  const taskId = await submitTask(prompt);
+  console.log(`  taskId: ${taskId}`);
+
+  const imageUrl = await pollForResult(taskId);
+  console.log(`  image ready: ${imageUrl}`);
+
+  const dlRes = await fetch(imageUrl);
+  if (!dlRes.ok) throw new Error(`Download failed: ${dlRes.status} ${dlRes.statusText}`);
+
+  const buffer = Buffer.from(await dlRes.arrayBuffer());
   await fs.writeFile(outPath, buffer);
 
   console.log(`✓ Wrote ${outPath}`);
@@ -103,8 +144,7 @@ async function main() {
   const tasks = [...backgroundTasks, ...textureTasks];
 
   for (const task of tasks) {
-    const exists = await fileExists(task.outPath);
-    if (exists) {
+    if (await fileExists(task.outPath)) {
       console.log(`⏭  Skipping ${task.kind} "${task.id}" (already exists).`);
       continue;
     }
@@ -112,15 +152,14 @@ async function main() {
     try {
       await generateAndSaveImage(task.prompt, task.outPath);
     } catch (err) {
-      console.error(`✗ Failed to generate ${task.kind} "${task.id}":`, err);
+      console.error(`✗ Failed ${task.kind} "${task.id}":`, err.message);
     }
   }
 
-  console.log('Done seeding visual assets.');
+  console.log("\nDone seeding visual assets.");
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-
