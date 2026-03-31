@@ -1,85 +1,306 @@
-/* Main Stage Container */
-.stage {
+/* ═══════════════════════════════════════════════
+   HEARTHLIGHT v2 — Chronicle Viewer Flow Styles
+   7-scene cinematic experience
+   ═══════════════════════════════════════════════ */
+
+/* ── Shared Stage ──────────────────────────────── */
+
+/* CTAs now use MagicCta component */
+
+/* ═══════════════════════════════════════════════
+   SCENE 1: ENVELOPE
+   ═══════════════════════════════════════════════ */
+
+.envelopeStage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  z-index: 20;
+  cursor: pointer;
+  background: #0e0c0a;
+  overflow: hidden;
+}
+
+.envelopeGlow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.envelopeParticles {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.envelope {
+  position: relative;
+  z-index: 2;
+}
+
+.envelopeBody {
+  position: relative;
+  width: 280px;
+  height: 200px;
+  background: linear-gradient(145deg, #1e1a14 0%, #14110d 50%, #1a1610 100%);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 4px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(201, 168, 76, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.envelopeFlap {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  height: 80px;
+  background: linear-gradient(180deg, #1e1a14 0%, #161310 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  border-bottom: none;
+}
+
+.waxSeal {
+  position: absolute;
+  top: 50px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #8b2020, #5a1010);
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  z-index: 3;
+}
+
+.sealIcon {
+  font-size: 18px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+}
+
+.envelopeName {
+  margin-top: 20px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ivory-dim);
+  letter-spacing: 0.02em;
+}
+
+.tapPrompt {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ivory-muted);
+}
+
+.envelopeFlash {
+  position: fixed;
+  inset: 0;
+  background: white;
+  z-index: 30;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════
+   SCENE 2: REVEAL
+   ═══════════════════════════════════════════════ */
+
+.revealStage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.revealBurst {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.revealParticleRing {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  pointer-events: none;
+}
+
+.revealDot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+.revealOccasion {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ivory-muted);
+  font-weight: 300;
+  position: relative;
+  z-index: 2;
+}
+
+.revealName {
+  font-family: var(--font-display);
+  font-size: clamp(44px, 10vw, 80px);
+  font-weight: 400;
+  color: var(--ivory);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-style: italic;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  padding: 0 24px;
+}
+
+.revealLine {
+  width: 80px;
+  height: 1px;
+  opacity: 0.5;
+  position: relative;
+  z-index: 2;
+}
+
+/* ═══════════════════════════════════════════════
+   SCENE 3: GREETING
+   ═══════════════════════════════════════════════ */
+
+.greetingStage {
   position: fixed;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  z-index: 10;
+  padding: 24px;
+}
+
+.greetingCard {
+  max-width: 500px;
+  width: 100%;
+  padding: 48px 32px;
+  background: rgba(22, 19, 16, 0.3);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 235, 190, 0.08);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.greetingText {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 6vw, 44px);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  display: inline;
+}
+
+.greetingCursor {
+  display: inline-block;
+  width: 2px;
+  height: 0.9em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+}
+
+/* ═══════════════════════════════════════════════
+   SCENE 4: CHRONICLE READING
+   ═══════════════════════════════════════════════ */
+
+.readingStage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
   z-index: 10;
 }
 
-/* Reveal Screen */
-.revealContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 40px;
-  text-align: center;
-  padding: 24px;
-  max-width: 600px;
-}
-
-.revealTitle {
-  font-family: var(--font-display);
-  font-size: clamp(36px, 8vw, 56px);
-  font-weight: 400;
-  color: var(--ivory);
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-.revealSubtitle {
-  font-family: var(--font-body);
-  font-size: clamp(16px, 3vw, 22px);
-  color: var(--ivory-muted);
-  font-weight: 300;
-  letter-spacing: 0.02em;
-}
-
-/* Reading Screen */
-.readingContainer {
-  position: relative;
-  width: 100%;
-  max-width: 680px;
-  padding: 80px 24px 100px;
-  display: flex;
-  flex-direction: column;
-  gap: 48px;
-  align-items: center;
-  overflow-y: auto;
-  max-height: 100vh;
-}
-
 .progressBar {
-  position: sticky;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--accent, #c9a84c);
   border-radius: 1px;
   z-index: 20;
-  margin-bottom: -2px;
   opacity: 0.85;
+}
+
+.readingScroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 60px 16px 40px;
+}
+
+.glassCard {
+  width: 100%;
+  max-width: 640px;
+  background: rgba(22, 19, 16, 0.45);
+  backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 235, 190, 0.08);
+  border-radius: 20px;
+  padding: 48px 28px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .readingHeader {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   text-align: center;
 }
 
 .readingCrest {
-  font-size: 32px;
-  color: var(--accent, var(--gold));
+  font-size: 28px;
 }
 
 .readingOccasion {
   font-family: var(--font-ui);
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ivory-muted);
@@ -88,17 +309,25 @@
 
 .readingName {
   font-family: var(--font-display);
-  font-size: clamp(36px, 6vw, 52px);
+  font-size: clamp(32px, 6vw, 48px);
   font-weight: 400;
   color: var(--ivory);
   letter-spacing: -0.02em;
   font-style: italic;
 }
 
+.readingGreeting {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 3vw, 24px);
+  font-style: italic;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
 .proseContainer {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
   width: 100%;
 }
 
@@ -113,8 +342,8 @@
   hyphens: auto;
 }
 
-.proseParagraph::first-letter {
-  font-size: 1.3em;
+.proseParagraph:first-child::first-letter {
+  font-size: 1.4em;
   font-weight: 400;
   float: left;
   line-height: 0.85;
@@ -123,213 +352,287 @@
   color: var(--accent, var(--gold));
 }
 
-.scrollIndicator {
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
-  color: var(--ivory-muted);
-  font-size: 20px;
-}
-
-/* Transition Screen */
-.transitionContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 60px;
-  text-align: center;
-  position: relative;
-  padding: 24px;
-}
-
-.transitionText {
-  font-family: var(--font-body);
-  font-size: clamp(24px, 5vw, 40px);
+.readingSignOff {
+  font-family: var(--font-display);
+  font-size: clamp(16px, 2.5vw, 20px);
   font-style: italic;
-  font-weight: 300;
-  color: var(--ivory);
-  line-height: 1.4;
-  max-width: 500px;
+  font-weight: 400;
+  opacity: 0.85;
+  align-self: flex-end;
 }
 
-.transitionGlow {
+.scrollHint {
+  color: var(--ivory-muted);
+  font-size: 18px;
+}
+
+/* ═══════════════════════════════════════════════
+   SCENE 5: CRESCENDO
+   ═══════════════════════════════════════════════ */
+
+.crescendoStage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.crescendoGlow {
   position: absolute;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--accent, var(--gold)) 0%, transparent 70%);
-  filter: blur(80px);
+  width: 100vw;
+  height: 100vh;
   pointer-events: none;
 }
 
-/* Animated Wish Screen */
-.wishContainer {
+.crescendoCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.emojiRain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.emojiParticle {
+  position: absolute;
+  font-size: 24px;
+  pointer-events: none;
+  left: 50%;
+}
+
+.crescendoContent {
+  position: relative;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 60px;
+  gap: 24px;
   text-align: center;
   padding: 24px;
-  position: relative;
-  max-width: 700px;
 }
 
-.wishGlow {
+.crescendoFor {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 4vw, 28px);
+  font-style: italic;
+  color: var(--ivory-dim);
+  font-weight: 400;
+}
+
+.crescendoWish {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  justify-content: center;
+}
+
+.crescendoWord {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 8vw, 68px);
+  font-weight: 700;
+  line-height: 1.2;
+  display: inline-block;
+  text-shadow: 0 0 40px currentColor;
+}
+
+/* ═══════════════════════════════════════════════
+   SCENE 6: FAREWELL
+   ═══════════════════════════════════════════════ */
+
+.farewellStage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.farewellCanvas {
   position: absolute;
-  width: 400px;
-  height: 400px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--accent, var(--gold)) 0%, transparent 70%);
-  filter: blur(100px);
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 0;
 }
 
-.glow_golden-warmth {
-  --accent: #c9a84c;
-}
-
-.glow_midnight-bloom {
-  --accent: #a064d2;
-}
-
-.glow_ocean-calm {
-  --accent: #50b4c8;
-}
-
-.glow_forest-dawn {
-  --accent: #64b450;
-}
-
-.glow_celestial {
-  --accent: #c882c8;
-}
-
-.wishText {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 12px;
-  justify-content: center;
+.farewellContent {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 24px;
+  text-align: center;
+}
+
+.farewellSignOff {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.farewellText {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 5vw, 40px);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.5;
+  max-width: 500px;
+}
+
+.farewellSender {
   font-family: var(--font-body);
-  font-size: clamp(28px, 5vw, 44px);
-  line-height: 1.6;
-  color: var(--ivory);
+  font-size: clamp(18px, 3vw, 24px);
+  color: var(--ivory-dim);
   font-weight: 300;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
 }
 
-.wishWord {
-  display: inline-block;
+.farewellLine {
+  width: 200px;
+  height: 1px;
 }
 
-/* Farewell Screen */
-.farewellContent {
+/* ═══════════════════════════════════════════════
+   SCENE 7: AFTERGLOW
+   ═══════════════════════════════════════════════ */
+
+.afterglowStage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.afterglowEmbers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.afterglowEmber {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+}
+
+.afterglowContent {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 40px;
-  text-align: center;
   padding: 24px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
 }
 
-.farewellText {
-  font-family: var(--font-body);
-  font-size: clamp(24px, 5vw, 36px);
-  font-style: italic;
-  font-weight: 300;
-  color: var(--ivory);
-  line-height: 1.5;
-  max-width: 600px;
-}
-
-.farewellSignature {
-  font-family: var(--font-body);
-  font-size: clamp(16px, 2vw, 20px);
-  color: var(--ivory-muted);
-  font-weight: 300;
-  line-height: 1.8;
-  letter-spacing: 0.02em;
-}
-
-.farewellActions {
+.afterglowAttribution {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  gap: 8px;
+}
+
+.afterglowFrom {
+  font-family: var(--font-body);
+  font-size: clamp(18px, 3vw, 24px);
+  color: var(--ivory);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.afterglowActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   width: 100%;
-  max-width: 400px;
 }
 
-/* CTA Buttons */
-.ctaButton {
+/* Afterglow buttons now use MagicCta component */
+
+.afterglowBrand {
   font-family: var(--font-ui);
-  font-size: 13px;
-  letter-spacing: 0.1em;
+  font-size: 10px;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  border: none;
-  border-radius: 24px;
-  padding: 14px 32px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-  backdrop-filter: blur(10px);
+  color: var(--ivory-muted);
 }
 
-.ctaReveal {
-  background: rgba(201, 168, 76, 0.15);
-  color: var(--ivory);
-  border: 1px solid rgba(201, 168, 76, 0.4);
-}
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
 
-.ctaReveal:hover {
-  background: rgba(201, 168, 76, 0.25);
-  border-color: rgba(201, 168, 76, 0.6);
-}
-
-.ctaPrimary {
-  background: var(--accent, var(--gold));
-  color: #0e0c0a;
-  font-weight: 600;
-}
-
-.ctaPrimary:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
-}
-
-.ctaSecondary {
-  background: rgba(201, 168, 76, 0.1);
-  color: var(--ivory);
-  border: 1px solid rgba(201, 168, 76, 0.3);
-}
-
-.ctaSecondary:hover {
-  background: rgba(201, 168, 76, 0.2);
-  border-color: rgba(201, 168, 76, 0.5);
-}
-
-/* Responsive */
 @media (max-width: 640px) {
-  .readingContainer {
-    padding: 60px 16px 80px;
+  .envelopeBody {
+    width: 240px;
+    height: 170px;
   }
 
-  .wishText {
-    gap: 6px 10px;
+  .envelopeFlap {
+    height: 65px;
   }
 
-  .farewellActions {
-    flex-direction: column;
+  .waxSeal {
+    top: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .sealIcon {
+    font-size: 15px;
+  }
+
+  .glassCard {
+    padding: 36px 20px 32px;
+    border-radius: 16px;
+  }
+
+  .readingScroll {
+    padding: 48px 12px 32px;
+  }
+
+  .crescendoWord {
+    text-shadow: 0 0 24px currentColor;
+  }
+
+  .afterglowButton {
+    padding: 14px 24px;
   }
 }
 
 @media (max-height: 600px) {
-  .readingContainer {
-    padding: 40px 24px 60px;
+  .envelopeBody {
+    width: 220px;
+    height: 150px;
   }
 
-  .wishContainer {
-    gap: 40px;
+  .glassCard {
+    padding: 28px 20px 24px;
+    gap: 24px;
   }
 }

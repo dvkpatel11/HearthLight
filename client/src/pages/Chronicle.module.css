@@ -1,9 +1,18 @@
-/* Root */
+/* Chronicle page — backdrop & chrome */
+
 .root {
   min-height: 100vh;
   background: #0e0c0a;
   position: relative;
   overflow-x: hidden;
+  cursor: none;
+}
+
+/* Restore cursor on touch devices */
+@media (pointer: coarse) {
+  .root {
+    cursor: auto;
+  }
 }
 
 /* Load state */
@@ -17,7 +26,7 @@
 }
 
 @keyframes pulse-load {
-  0%, 100% { transform: scale(0.9) ; opacity: 0.5; }
+  0%, 100% { transform: scale(0.9); opacity: 0.5; }
   50% { transform: scale(1.1); opacity: 1; }
 }
 
@@ -34,7 +43,7 @@
   color: var(--ivory-muted);
 }
 
-/* Hero */
+/* Hero backdrop */
 .heroWrap {
   position: fixed;
   inset: 0;
@@ -65,175 +74,9 @@
   pointer-events: none;
 }
 
-/* Content */
-.content {
-  position: relative;
-  z-index: 3;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 80px 24px 100px;
-  max-width: 720px;
-  margin: 0 auto;
-  gap: 0;
-}
-
 .lottieLayer {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 2;
-}
-
-/* Header */
-.header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 64px;
-  width: 100%;
-}
-
-.eyebrow {
-  font-family: var(--font-ui);
-  font-size: 10px;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  font-weight: 400;
-}
-
-.dividerLine {
-  height: 1px;
-  width: 120px;
-}
-
-/* Occasion */
-.occasion {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 72px;
-  text-align: center;
-}
-
-.occasionLabel {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ivory-muted);
-  font-weight: 300;
-}
-
-.recipientName {
-  font-family: var(--font-display);
-  font-size: clamp(44px, 7vw, 76px);
-  font-weight: 400;
-  color: var(--ivory);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  font-style: italic;
-}
-
-/* Prose */
-.proseSection {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  margin-bottom: 80px;
-}
-
-.para {
-  font-family: var(--font-body);
-  font-size: clamp(17px, 2vw, 20px);
-  line-height: 1.9;
-  color: var(--ivory);
-  font-weight: 300;
-  letter-spacing: 0.01em;
-  text-align: justify;
-  hyphens: auto;
-}
-
-.para::first-letter {
-  font-size: 1.3em;
-  font-weight: 400;
-  float: left;
-  line-height: 0.85;
-  margin-right: 4px;
-  margin-top: 4px;
-  color: var(--accent, var(--gold));
-}
-
-/* Final wish */
-.finalWish {
-  position: relative;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  padding: 48px 0 60px;
-  text-align: center;
-  margin-bottom: 60px;
-}
-
-.finalOrb {
-  position: absolute;
-  inset: -40px;
-  pointer-events: none;
-  border-radius: 50%;
-  filter: blur(60px);
-}
-
-.finalLine {
-  height: 1px;
-  width: 200px;
-  transform-origin: center;
-}
-
-.finalText {
-  font-family: var(--font-body);
-  font-size: 18px;
-  font-style: italic;
-  font-weight: 300;
-  line-height: 1.7;
-  position: relative;
-}
-
-.finalName {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 5vw, 44px);
-  font-weight: 400;
-  color: var(--ivory);
-  letter-spacing: -0.01em;
-  position: relative;
-}
-
-/* Stats */
-.statsBar {
-  margin-bottom: 32px;
-}
-
-.statsText {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  color: var(--ivory-muted);
-  letter-spacing: 0.08em;
-  padding: 6px 16px;
-  border: 1px solid var(--border);
-  border-radius: 24px;
-}
-
-/* Footer */
-.footer {
-  font-family: var(--font-ui);
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: var(--ivory-muted);
-  text-transform: uppercase;
-  margin-top: auto;
 }

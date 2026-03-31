@@ -146,6 +146,9 @@ export interface Chronicle {
   theme: Theme;
   language: Language;
   prose: string;
+  greeting?: string;
+  signOff?: string;
+  senderName?: string;
   imageUrl?: string;
   animationUrl?: string;
   audioUrl?: string;

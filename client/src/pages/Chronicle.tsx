@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion'
 import { fetchChronicle, logView } from '../lib/api'
 import type { Chronicle } from '../types'
@@ -7,12 +7,17 @@ import FloatingParticles from '../components/ui/FloatingParticles'
 import AudioControls from '../components/ui/AudioControls'
 import { getThemeBackground, getThemeTextureLayers, getThemeLottieOverlay } from '../lib/themeAssets'
 import LottieOverlay from '../components/ui/LottieOverlay'
+import Envelope from '../components/chronicle/Envelope'
 import Reveal from '../components/chronicle/Reveal'
+import Greeting from '../components/chronicle/Greeting'
 import ChronicleReading from '../components/chronicle/ChronicleReading'
-import Transition from '../components/chronicle/Transition'
-import AnimatedWish from '../components/chronicle/AnimatedWish'
+import Crescendo from '../components/chronicle/Crescendo'
 import Farewell from '../components/chronicle/Farewell'
+import Afterglow from '../components/chronicle/Afterglow'
+import GlowCursor from '../components/chronicle/GlowCursor'
 import styles from './Chronicle.module.css'
+
+/* ── Theme maps ────────────────────────────────── */
 
 const THEME_PARTICLES: Record<string, string> = {
   'golden-warmth':  'rgba(201, 168, 76, 0.5)',
@@ -30,6 +35,14 @@ const THEME_OVERLAY: Record<string, string> = {
   'celestial':      'linear-gradient(180deg, rgba(8,8,18,0.55) 0%, rgba(8,8,18,0.88) 60%, #080812 100%)',
 }
 
+const THEME_OVERLAY_READING: Record<string, string> = {
+  'golden-warmth':  'linear-gradient(180deg, rgba(14,12,10,0.18) 0%, rgba(14,12,10,0.35) 100%)',
+  'midnight-bloom': 'linear-gradient(180deg, rgba(10,8,20,0.18) 0%, rgba(10,8,20,0.35) 100%)',
+  'ocean-calm':     'linear-gradient(180deg, rgba(5,15,22,0.18) 0%, rgba(5,15,22,0.35) 100%)',
+  'forest-dawn':    'linear-gradient(180deg, rgba(8,15,10,0.18) 0%, rgba(8,15,10,0.35) 100%)',
+  'celestial':      'linear-gradient(180deg, rgba(8,8,18,0.18) 0%, rgba(8,8,18,0.35) 100%)',
+}
+
 const THEME_ACCENT: Record<string, string> = {
   'golden-warmth':  '#c9a84c',
   'midnight-bloom': '#a064d2',
@@ -38,60 +51,76 @@ const THEME_ACCENT: Record<string, string> = {
   'celestial':      '#c882c8',
 }
 
-type FlowStage = 'reveal' | 'reading' | 'transition' | 'wish' | 'farewell'
+/* ── Flow stages ───────────────────────────────── */
 
-export default function Chronicle() {
+type FlowStage =
+  | 'envelope'
+  | 'reveal'
+  | 'greeting'
+  | 'reading'
+  | 'crescendo'
+  | 'farewell'
+  | 'afterglow'
+
+/* Stages where the backdrop should be vivid (lighter overlay) */
+const VIVID_STAGES: FlowStage[] = ['reveal', 'reading', 'crescendo']
+
+export default function ChroniclePage() {
   const { slug } = useParams<{ slug: string }>()
-  const navigate = useNavigate()
   const [chronicle, setChronicle] = useState<Chronicle | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [flowStage, setFlowStage] = useState<FlowStage>('reveal')
+  const [flowStage, setFlowStage] = useState<FlowStage>('envelope')
   const heroRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = useReducedMotion()
 
   const { scrollYProgress } = useScroll({ target: heroRef })
   const imageParallax = useTransform(scrollYProgress, [0, 1], ['0%', '25%'])
-  const imageOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
 
+  // Fetch chronicle
   useEffect(() => {
     if (!slug) return
     fetchChronicle(slug)
-      .then(c => {
-        setChronicle(c)
-        logView(slug)
-      })
+      .then((c) => { setChronicle(c); logView(slug) })
       .catch(() => setError('This chronicle could not be found.'))
       .finally(() => setLoading(false))
   }, [slug])
 
+  // Update browser title
+  useEffect(() => {
+    if (chronicle) {
+      document.title = `${chronicle.recipient.name}'s Chronicle — Hearthlight`
+    }
+    return () => { document.title = 'Hearthlight' }
+  }, [chronicle])
+
+  /* ── Derived values ─────────────────────────── */
+
   const theme = chronicle?.theme || 'golden-warmth'
   const accent = THEME_ACCENT[theme] || THEME_ACCENT['golden-warmth']
   const particleColor = THEME_PARTICLES[theme] || THEME_PARTICLES['golden-warmth']
-  const overlay = THEME_OVERLAY[theme] || THEME_OVERLAY['golden-warmth']
+  const isVivid = VIVID_STAGES.includes(flowStage)
+  const overlay = isVivid
+    ? (THEME_OVERLAY_READING[theme] || THEME_OVERLAY_READING['golden-warmth'])
+    : (THEME_OVERLAY[theme] || THEME_OVERLAY['golden-warmth'])
 
   const backgroundImage = chronicle?.imageUrl || getThemeBackground(theme)
   const showAnimation = !!chronicle?.animationUrl && !shouldReduceMotion
   const textureLayers = getThemeTextureLayers()
   const lottieOverlay = getThemeLottieOverlay()
 
-  const generateWish = (): string => {
-    const recipient = chronicle?.recipient.name || 'you'
-    const occasion = chronicle?.occasion.label || 'this special moment'
-    const wishes = [
-      `May ${recipient} shine brightly on this ${occasion.toLowerCase()}.`,
-      `Wishing ${recipient} a magnificent ${occasion.toLowerCase()}.`,
-      `Here's to ${recipient}'s beautiful journey ahead.`,
-      `${recipient}, you are truly cherished.`,
-      `May your ${occasion.toLowerCase()} be as wonderful as you are.`,
-    ]
-    return wishes[Math.floor(Math.random() * wishes.length)]
-  }
+  // Skip greeting scene if no greeting text
+  const hasGreeting = !!chronicle?.greeting?.trim()
+
+  /* ── Loading / Error states ─────────────────── */
 
   if (loading) {
     return (
       <div className={styles.loadState}>
-        <div className={styles.loadOrb} style={{ background: `radial-gradient(circle, ${accent} 0%, transparent 70%)` }} />
+        <div
+          className={styles.loadOrb}
+          style={{ background: `radial-gradient(circle, ${accent} 0%, transparent 70%)` }}
+        />
       </div>
     )
   }
@@ -106,18 +135,41 @@ export default function Chronicle() {
 
   if (!chronicle) return null
 
+  /* ── Scene transition handler ───────────────── */
+
+  function nextStage(from: FlowStage) {
+    switch (from) {
+      case 'envelope':  setFlowStage('reveal'); break
+      case 'reveal':    setFlowStage(hasGreeting ? 'greeting' : 'reading'); break
+      case 'greeting':  setFlowStage('reading'); break
+      case 'reading':   setFlowStage('crescendo'); break
+      case 'crescendo': setFlowStage('farewell'); break
+      case 'farewell':  setFlowStage('afterglow'); break
+      case 'afterglow': break
+    }
+  }
+
+  function replay() {
+    setFlowStage('envelope')
+  }
+
+  /* ── Render ─────────────────────────────────── */
+
   return (
     <div className={styles.root} style={{ '--accent': accent } as React.CSSProperties}>
-      {/* Background layers */}
-      <FloatingParticles count={25} color={particleColor} />
+      {/* Custom glowing cursor */}
+      <GlowCursor accent={accent} />
 
-      {chronicle.audioUrl && (
-        <audio src={chronicle.audioUrl} autoPlay loop style={{ display: 'none' }} />
+      {/* Background layers — always present, intensity changes per stage */}
+      {flowStage !== 'envelope' && (
+        <FloatingParticles count={25} color={particleColor} />
       )}
-      {chronicle.musicUrl && (
+
+      {chronicle.musicUrl && flowStage !== 'envelope' && (
         <AudioControls src={chronicle.musicUrl} accentColor={accent} />
       )}
 
+      {/* Hero backdrop */}
       <div className={styles.heroWrap} ref={heroRef}>
         {showAnimation ? (
           <video
@@ -135,26 +187,20 @@ export default function Chronicle() {
             style={{
               backgroundImage: `url(${backgroundImage})`,
               y: shouldReduceMotion ? undefined : imageParallax,
-              opacity: imageOpacity,
             }}
             animate={
               shouldReduceMotion
                 ? undefined
-                : {
-                    scale: [1, 1.02, 1],
-                  }
+                : { scale: [1, 1.02, 1] }
             }
             transition={
               shouldReduceMotion
                 ? undefined
-                : {
-                    duration: 40,
-                    repeat: Infinity,
-                    ease: 'linear',
-                  }
+                : { duration: 40, repeat: Infinity, ease: 'linear' }
             }
           />
         )}
+
         {textureLayers.map((src, index) => (
           <motion.div
             key={index}
@@ -163,41 +209,58 @@ export default function Chronicle() {
             animate={
               shouldReduceMotion
                 ? undefined
-                : {
-                    opacity: [0.15, 0.3, 0.15],
-                    y: [0, -10, 0],
-                  }
+                : { opacity: [0.15, 0.3, 0.15], y: [0, -10, 0] }
             }
             transition={
               shouldReduceMotion
                 ? undefined
-                : {
-                    duration: 30 + index * 5,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }
+                : { duration: 30 + index * 5, repeat: Infinity, ease: 'easeInOut' }
             }
           />
         ))}
-        <div className={styles.heroOverlay} style={{ background: overlay }} />
+
+        <motion.div
+          className={styles.heroOverlay}
+          animate={{ background: overlay }}
+          transition={{ duration: 1.5, ease: 'easeInOut' }}
+        />
       </div>
 
-      {lottieOverlay && (
+      {lottieOverlay && flowStage !== 'envelope' && (
         <div className={styles.lottieLayer}>
           <LottieOverlay src={lottieOverlay} />
         </div>
       )}
 
-      {/* Flow stages */}
+      {/* ── Flow Scenes ──────────────────────── */}
       <AnimatePresence mode="wait">
+        {flowStage === 'envelope' && (
+          <Envelope
+            key="envelope"
+            recipientName={chronicle.recipient.name}
+            occasionLabel={chronicle.occasion.label}
+            accent={accent}
+            particleColor={particleColor}
+            onOpen={() => nextStage('envelope')}
+          />
+        )}
+
         {flowStage === 'reveal' && (
           <Reveal
             key="reveal"
             recipientName={chronicle.recipient.name}
             occasionLabel={chronicle.occasion.label}
-            tone={chronicle.narrative?.tone}
-            particleColor={particleColor}
-            onReveal={() => setFlowStage('reading')}
+            accent={accent}
+            onComplete={() => nextStage('reveal')}
+          />
+        )}
+
+        {flowStage === 'greeting' && (
+          <Greeting
+            key="greeting"
+            greeting={chronicle.greeting!}
+            accent={accent}
+            onComplete={() => nextStage('greeting')}
           />
         )}
 
@@ -205,38 +268,43 @@ export default function Chronicle() {
           <ChronicleReading
             key="reading"
             prose={chronicle.prose}
+            greeting={chronicle.greeting}
+            signOff={chronicle.signOff}
             recipientName={chronicle.recipient.name}
             occasionLabel={chronicle.occasion.label}
-            onComplete={() => setFlowStage('transition')}
+            accent={accent}
+            onComplete={() => nextStage('reading')}
           />
         )}
 
-        {flowStage === 'transition' && (
-          <Transition
-            key="transition"
+        {flowStage === 'crescendo' && (
+          <Crescendo
+            key="crescendo"
+            recipientName={chronicle.recipient.name}
             occasionLabel={chronicle.occasion.label}
-            onComplete={() => setFlowStage('wish')}
-          />
-        )}
-
-        {flowStage === 'wish' && (
-          <AnimatedWish
-            key="wish"
-            wish={generateWish()}
-            theme={theme}
-            occasionLabel={chronicle.occasion.label}
-            onComplete={() => setFlowStage('farewell')}
+            accent={accent}
+            particleColor={particleColor}
+            onComplete={() => nextStage('crescendo')}
           />
         )}
 
         {flowStage === 'farewell' && (
           <Farewell
             key="farewell"
-            senderName={chronicle.recipient.name}
-            occasionLabel={chronicle.occasion.label}
-            tone={chronicle.narrative?.tone}
-            onShare={() => navigate('/')}
-            onReplay={() => setFlowStage('reveal')}
+            signOff={chronicle.signOff}
+            senderName={chronicle.senderName}
+            accent={accent}
+            particleColor={particleColor}
+            onComplete={() => nextStage('farewell')}
+          />
+        )}
+
+        {flowStage === 'afterglow' && (
+          <Afterglow
+            key="afterglow"
+            senderName={chronicle.senderName}
+            accent={accent}
+            onReplay={replay}
           />
         )}
       </AnimatePresence>

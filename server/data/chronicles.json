@@ -812,6 +812,37 @@
       "musicUrl": null,
       "createdAt": "2026-02-27T05:37:16.187Z",
       "updatedAt": "2026-02-27T05:37:16.187Z"
+    },
+    {
+      "id": "test-v2-viewer-flow",
+      "slug": "test-v2",
+      "creatorToken": "test-token-123",
+      "recipient": {
+        "name": "Sarah",
+        "relationship": "Best Friend",
+        "age": "30"
+      },
+      "occasion": {
+        "label": "Birthday",
+        "date": "2026-04-15"
+      },
+      "narrative": {
+        "tone": "warm & heartfelt",
+        "sharedMemory": "That time we got lost hiking and ended up finding that hidden waterfall",
+        "traits": "adventurous, kind, hilarious"
+      },
+      "theme": "golden-warmth",
+      "language": "English",
+      "greeting": "Hey Sar Bear",
+      "signOff": "Love always, Danny",
+      "senderName": "Danny",
+      "prose": "There are people who walk into your life and rearrange the furniture of your heart so quietly, you don't even notice until one day you look around and realize everything is exactly where it should be. You are one of those people, Sarah.\n\nThirty years. Three decades of becoming the person who laughs so hard she snorts, who cries at commercials about dogs finding their way home, who once convinced an entire restaurant that it was her birthday just to get free cake — and then felt so guilty she went back and paid for everyone's dessert.\n\nThere's a particular kind of magic in the way you move through the world. Not the loud, demanding kind, but the kind that makes people feel seen. You remember the small things — the coffee order, the rough Tuesday, the thing someone said in passing three months ago that they thought nobody heard. You heard it. You always do.\n\nRemember that hike? The one where we were hopelessly, spectacularly lost, and you kept insisting the trail was 'just around the next bend' for approximately forty-seven bends? And then we stumbled onto that hidden waterfall, and you stood there with your mouth open like a kid who just discovered snow for the first time. That's you, Sarah — even when you're lost, you find something beautiful.\n\nAs you step into thirty, know this: the world is better, funnier, warmer, and infinitely more interesting because you're in it. Not the idea of you, not the version you think people want — just you, exactly as you are, snort-laugh and all.",
+      "imageUrl": null,
+      "animationUrl": null,
+      "audioUrl": null,
+      "musicUrl": null,
+      "createdAt": "2026-03-31T01:25:06.256Z",
+      "updatedAt": "2026-03-31T01:25:06.257Z"
     }
   ],
   "views": [
@@ -999,6 +1030,66 @@
       "slug": "4QQDmc2I7o",
       "ipHash": "MTI3LjAuMC4x",
       "viewedAt": "2026-02-27T05:37:17.026Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:32:24.185Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:32:24.205Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:33:11.380Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:33:11.402Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:33:27.146Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:33:49.492Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:33:49.514Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:42:47.378Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:42:50.393Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:42:55.112Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:43:32.719Z"
+    },
+    {
+      "slug": "test-v2",
+      "ipHash": "Ojox",
+      "viewedAt": "2026-03-31T01:43:32.742Z"
     }
   ]
 }

@@ -1,0 +1,90 @@
+/* MagicCta — magnetic text buttons with rhythmic hover */
+
+.magicCta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 16px 32px;
+  cursor: none; /* hide default cursor — custom cursor handles it */
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--ivory);
+  letter-spacing: 0.1em;
+  overflow: visible;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Bordered variant — subtle glass border */
+.bordered {
+  border: 1px solid var(--accent, rgba(255, 235, 190, 0.15));
+  border-radius: 32px;
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.03);
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.bordered:hover {
+  border-color: var(--accent, rgba(255, 235, 190, 0.35));
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Minimal variant — just text, no border */
+.minimal {
+  padding: 12px 24px;
+}
+
+/* Glow behind on hover */
+.glow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Expanding underline */
+.underline {
+  position: absolute;
+  bottom: 8px;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  transform-origin: center;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.minimal .underline {
+  left: 0;
+  right: 0;
+  bottom: 4px;
+}
+
+/* Letter container */
+.letters {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+}
+
+.letter {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Mobile — no magnetic, just scale */
+@media (hover: none) {
+  .magicCta {
+    cursor: pointer;
+  }
+
+  .magicCta:active {
+    transform: scale(0.95);
+  }
+}
